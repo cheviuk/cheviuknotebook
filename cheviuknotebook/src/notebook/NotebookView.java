@@ -307,6 +307,7 @@ public class NotebookView {
     public void loadFromFile(){
         try {
             nc.loadFromFile();
+            System.out.println("Loading from file has been successfully completed.");
         } catch (FileNotFoundException ex) {
             System.out.println("File is absent.");
         }
