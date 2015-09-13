@@ -6,25 +6,22 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
+ *
  * Created by cheviuk on 11.09.2015.
  */
 public class NotebookModel implements Serializable {
 
-    private List<Note> notes = new LinkedList<Note>();
+    private List<Note> notes = new LinkedList<>();
+
+    public NotebookModel() {
+        this.notes = new ArrayList<>();
+    }
 
     public List<Note> getNotes() {
         return notes;
     }
 
     public void setNotes(List<Note> notes) {
-        this.notes = notes;
-    }
-
-    public NotebookModel(){
-        this.notes = new ArrayList<Note>();
-    }
-
-    public NotebookModel(List<Note> notes) {
         this.notes = notes;
     }
 

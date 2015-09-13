@@ -1,7 +1,7 @@
 package notebook;
 
-import java.io.*;
-import java.nio.file.Paths;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -9,6 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
+ *
  * Created by cheviuk on 04.09.2015.
  */
 public class NotebookView {
@@ -32,9 +33,8 @@ public class NotebookView {
 
     public void createNewNote(){
         Scanner scanner = new Scanner(System.in);
-        int command = 0;
+        int command;
 
-        while (true){
             try {
                 System.out.println("Please select type of Note:");
                 System.out.println("1: Note(simple note)");
@@ -46,27 +46,27 @@ public class NotebookView {
                 switch (command) {
                     case 1:
                         createNote();
-                        return;
+                        break;
                     case 2:
                         createTask();
-                        return;
+                        break;
                     case 3:
                         createMeeting();
-                        return;
+                        break;
                     default:
                         System.out.println("Incorrect command!");
                         createNewNote();
-                        return;
+                        break;
                 }
+            } catch (InputMismatchException | NumberFormatException ex) {
+                System.out.println("Wrong input!");
             }
-            catch (InputMismatchException | NumberFormatException ex) { System.out.println("Wrong input!"); return; }
-        }
 
     }
 
     private void createNote(){
-        String summary = "";
-        String description = "";
+        String summary;
+        String description;
 
         Scanner scanner = new Scanner(System.in);
         System.out.println("Specify note summary: ");
@@ -78,9 +78,9 @@ public class NotebookView {
     }
 
     private void createTask(){
-        String summary = "";
-        String description = "";
-        Date dueDate = null;
+        String summary;
+        String description;
+        Date dueDate;
 
         Scanner scanner = new Scanner(System.in);
         System.out.println("Specify note summary: ");
@@ -109,12 +109,12 @@ public class NotebookView {
     }
 
     private void createMeeting(){
-        String summary = "";
-        String description = "";
-        Date startTime = null;
-        Date endTime = null;
-        String place = "";
-        List<Contact> contacts = new LinkedList<>();
+        String summary;
+        String description;
+        Date startTime;
+        Date endTime;
+        String place;
+        List<Contact> contacts;
 
         Scanner scanner = new Scanner(System.in);
         System.out.println("Specify note summary: ");
@@ -123,8 +123,8 @@ public class NotebookView {
         description = scanner.nextLine();
         System.out.println("Specify place: ");
         place = scanner.nextLine();
-        String startTimeString = "";
-        String endTimeString = "";
+        String startTimeString;
+        String endTimeString;
 
         while (true) {
             try {
@@ -173,19 +173,19 @@ public class NotebookView {
                 System.out.println(ex.getMessage());
             }
         }
-        List<Contact> lc = new ArrayList<>();
+        contacts = new ArrayList<>();
 
         System.out.println("Specify contact/s:");
-        createConctact(lc);
+        createContact(contacts);
 
-        nc.add(summary, description, place, startTime, endTime, lc);
+        nc.add(summary, description, place, startTime, endTime, contacts);
     }
 
-    private void createConctact(List<Contact> contacts){
+    private void createContact(List<Contact> contacts) {
 
-        String name = "";
-        String email = "";
-        String phone = "";
+        String name;
+        String email;
+        String phone;
 
         Scanner scanner = new Scanner(System.in);
         System.out.println("Specify name: ");
@@ -229,7 +229,7 @@ public class NotebookView {
             System.out.println("Do you want to add another contact? y/n");
             String answer = scanner.nextLine();
             if (answer.toLowerCase().equals("y")) {
-                createConctact(contacts);
+                createContact(contacts);
                 break;
             }
             else if(answer.toLowerCase().equals("n")){
@@ -307,8 +307,7 @@ public class NotebookView {
     public void loadFromFile(){
         try {
             nc.loadFromFile();
-        }
-        catch (FileNotFoundException fnfex) {
+        } catch (FileNotFoundException ex) {
             System.out.println("File is absent.");
         }
         catch (IOException | ClassNotFoundException ex) {
