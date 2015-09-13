@@ -13,17 +13,20 @@ import java.util.regex.Pattern;
  */
 public class NotebookView {
 
-    public NotebookView()
+    NotebookController nc = null;
+
+    public NotebookView(NotebookController notebookController){
+        this.nc = notebookController;
     }
 
-    public void printAll(NotebookController nc) {
+    public void printAll() {
         if(nc.getNotes().size() <= 0) {
             System.out.println("There is no any notes to print.");
             System.out.println();
             return;
         }
-        for(int i = 0; i<notes.size(); i++) {
-            System.out.println(Integer.toString(i + 1) + ": " + notes.get(i).getSummary());
+        for(int i = 0; i<nc.getNotes().size(); i++) {
+            System.out.println(Integer.toString(i + 1) + ": " + nc.getNotes().get(i).getSummary());
         }
     }
 
@@ -61,7 +64,7 @@ public class NotebookView {
 
     }
 
-    private void createNote(NotebookController nc){
+    private void createNote(){
         String summary = "";
         String description = "";
 
@@ -74,7 +77,7 @@ public class NotebookView {
         nc.add(summary, description);
     }
 
-    private void createTask(NotebookController notes){
+    private void createTask(){
         String summary = "";
         String description = "";
         Date dueDate = null;
@@ -94,8 +97,7 @@ public class NotebookView {
                 if(dueDate.before(new Date())){
                     System.out.println("Date cannot be before current date.");
                 } else {
-                    Task task = new Task(summary, description, dueDate);
-                    notes.add(task);
+                    nc.add(summary, description, dueDate);
                     return;
                 }
             }
@@ -172,19 +174,23 @@ public class NotebookView {
             }
         }
         List<Contact> lc = new ArrayList<>();
+
+        System.out.println("Specify contact/s:");
         createConctact(lc);
 
-        Meeting meeting = new Meeting(summary, description, place, startTime, endTime, lc);
-        notes.add(meeting);
+        nc.add(summary, description, place, startTime, endTime, lc);
     }
 
     private void createConctact(List<Contact> contacts){
-        System.out.println("Specify contact/s:");
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Specify name");
-        String name = scanner.nextLine();
+
+        String name = "";
         String email = "";
         String phone = "";
+
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Specify name: ");
+        name = scanner.nextLine();
+
 
         while (true) {
             try {
@@ -218,6 +224,7 @@ public class NotebookView {
             }
         }
         contacts.add(new Contact(name, email, phone));
+
         while (true) {
             System.out.println("Do you want to add another contact? y/n");
             String answer = scanner.nextLine();
@@ -235,18 +242,18 @@ public class NotebookView {
     }
 
     public void printNoteInfo(){
-        if(notes.size() <= 0){
+        if(nc.getNotes().size() <= 0){
             System.out.println("There is no any notes to print.");
             return;
         }
 
-        while (true) {
+        while(true){
 
             try {
                 Scanner scanner = new Scanner(System.in);
                 System.out.println("Type id of note: ");
                 int id = Integer.parseInt(scanner.nextLine()) - 1;
-                notes.get(id).print();
+                nc.getNotes().get(id).print();
                 return;
             }
             catch (IndexOutOfBoundsException ex) { System.out.println("Incorrect id!");}
@@ -255,7 +262,7 @@ public class NotebookView {
     }
 
     public void deleteNote(){
-        if(notes.size() <= 0) {
+        if(nc.getNotes().size() <= 0) {
             System.out.println("There is no any notes to delete.");
             return;
         }
@@ -264,7 +271,7 @@ public class NotebookView {
                 Scanner scanner = new Scanner(System.in);
                 System.out.println("Type id of note: ");
                 int id = Integer.parseInt(scanner.nextLine()) - 1;
-                notes.remove(id);
+                nc.delete(id);
                 return;
             }
             catch (IndexOutOfBoundsException ex){ System.out.println("Incorrect id!"); }
@@ -289,12 +296,7 @@ public class NotebookView {
 
     public void saveToFile(){
         try {
-            FileOutputStream fout = new FileOutputStream(Paths.get("").toAbsolutePath().toString() + "\\notebook.ser", false);
-            ObjectOutputStream oos = new ObjectOutputStream(fout);
-            oos.writeObject(this);
-            System.out.println("Notebook saved to: " + Paths.get("").toAbsolutePath().toString() + "\\notebook.ser");
-            oos.close();
-            fout.close();
+            nc.saveToFile();
         }
         catch (Exception ex){
             System.out.println("File is not saved.");
@@ -304,15 +306,7 @@ public class NotebookView {
 
     public void loadFromFile(){
         try {
-            List<Object> objects = new ArrayList<Object>();
-            FileInputStream fis = new FileInputStream(Paths.get("").toAbsolutePath().toString() + "\\notebook.ser");
-            ObjectInputStream ois = new ObjectInputStream(fis);
-            objects.add(ois.readObject());
-            ois.close();
-            fis.close();
-            Notebook loadedNotebook = (Notebook)objects.get(0);
-            this.setNotes(loadedNotebook.getNotes());
-
+            nc.loadFromFile();
         }
         catch (FileNotFoundException fnfex) {
             System.out.println("File is absent.");

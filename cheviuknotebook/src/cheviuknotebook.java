@@ -8,9 +8,9 @@ import java.util.Scanner;
 public class cheviuknotebook {
    public static void main(String[] args) {
 
-       NotebookView notebookView = new NotebookView();
-       NotebookController notebookController = new NotebookController();
        NotebookModel notebookModel = new NotebookModel();
+       NotebookController notebookController = new NotebookController(notebookModel);
+       NotebookView notebookView = new NotebookView(notebookController);
 
        Scanner scanner = new Scanner(System.in);
        int command = 0;
@@ -30,7 +30,7 @@ public class cheviuknotebook {
            catch (NumberFormatException ex){ System.out.println("Wrong input!"); }
 
            switch (command) {
-               case (1): { notebookView.printAll(notebookController); break;}
+               case (1): { notebookView.printAll(); break;}
                case (2): {System.out.println("Create new note:"); notebookView.createNewNote(); System.out.println(); break;}
                case (3): {System.out.println("Delete note:"); notebookView.deleteNote(); System.out.println(); break;}
                case (4): {System.out.println("Print note info:"); notebookView.printNoteInfo(); System.out.println(); break;}
@@ -42,4 +42,3 @@ public class cheviuknotebook {
        }
     }
 }
-//test

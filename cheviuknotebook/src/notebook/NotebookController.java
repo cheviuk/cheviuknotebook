@@ -1,38 +1,67 @@
 package notebook;
 
+import java.io.*;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 /**
  * Created by cheviuk on 11.09.2015.
  */
 public class NotebookController {
 
-    NoteModel notes = null;
+    NotebookModel notebookModel = null;
 
-    public NoteModel getNotes() {
-        return notes;
+    public NotebookController(NotebookModel notebookModel){
+        this.notebookModel = notebookModel;
     }
 
-    public void setNotes(NoteModel notes) {
-        this.notes = notes;
+    public List<Note> getNotes() {
+
+        return notebookModel.getNotes();
     }
 
     public void add(String summary, String description){
         Note note = new Note(summary, description);
-        notes.add(note);
+        notebookModel.add(note);
     }
 
     public void add(String summary, String description, Date dueDate){
         Task task = new Task(summary, description, dueDate);
-        notes.add(task);
+        notebookModel.add(task);
     }
 
     public void add(String summary, String description, String place, Date startTime, Date endTime,
-                    List<Contacts> contacts) {
+                    List<Contact> contacts) {
         Meeting meeting = new Meeting(summary, description, place, startTime, endTime, contacts);
-        notes.add(meeting);
+        notebookModel.add(meeting);
     }
 
     public void delete(int id){
+        notebookModel.delete(id);
+    }
 
+    public void saveToFile() throws FileNotFoundException, IOException{
+        FileOutputStream fout = new FileOutputStream(Paths.get("").toAbsolutePath().toString() + "\\notebook.ser", false);
+        ObjectOutputStream oos = new ObjectOutputStream(fout);
+        oos.writeObject(notebookModel);
+        System.out.println("Notebook saved to: " + Paths.get("").toAbsolutePath().toString() + "\\notebook.ser");
+        oos.close();
+        fout.close();
+    }
+
+    public void loadFromFile() throws  IOException, ClassNotFoundException{
+
+        List<Object> objects = new ArrayList<>();
+        FileInputStream fis = new FileInputStream(Paths.get("").toAbsolutePath().toString() + "\\notebook.ser");
+        ObjectInputStream ois = new ObjectInputStream(fis);
+        objects.add(ois.readObject());
+        ois.close();
+        fis.close();
+
+        NotebookModel loadedNotebook = (NotebookModel)objects.get(0);
+        this.notebookModel.setNotes(loadedNotebook.getNotes());
     }
 
 }
